@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }}'s Profile - Student News{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- User Info Card -->
+    <div class="bg-white rounded-lg shadow-xl p-8 mb-8">
+        <div class="flex items-center space-x-6">
+            <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full w-24 h-24 flex items-center justify-center">
+                <i class="fas fa-user text-4xl text-white"></i>
+            </div>
+            <div class="flex-1">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                    {{ user.username }}
+                    {% if user.is_admin %}
+                    <span class="ml-3 bg-red-100 text-red-800 text-sm px-3 py-1 rounded-full">
+                        <i class="fas fa-user-shield mr-1"></i>Admin
+                    </span>
+                    {% endif %}
+                </h1>
+                <p class="text-gray-600 mb-3">
+                    <i class="fas fa-envelope mr-2"></i>{{ user.email }}
+                </p>
+                <p class="text-gray-500 text-sm">
+                    <i class="fas fa-calendar mr-2"></i>Member since {{ user.created_at.strftime('%B %Y') }}
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center border-t-4 border-blue-500">
+            <i class="fas fa-newspaper text-3xl text-blue-500 mb-2"></i>
+            <h3 class="text-2xl font-bold text-gray-800">{{ posts|length }}</h3>
+            <p class="text-gray-600">Posts</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center border-t-4 border-green-500">
+            <i class="fas fa-comments text-3xl text-green-500 mb-2"></i>
+            <h3 class="text-2xl font-bold text-gray-800">{{ user.comments|length }}</h3>
+            <p class="text-gray-600">Comments</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center border-t-4 border-purple-500">
+            <i class="fas fa-share text-3xl text-purple-500 mb-2"></i>
+            <h3 class="text-2xl font-bold text-gray-800">{{ user.shares|length }}</h3>
+            <p class="text-gray-600">Shares</p>
+        </div>
+    </div>
+    
+    <!-- User Posts -->
+    <div class="bg-white rounded-lg shadow-xl p-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">
+            <i class="fas fa-newspaper text-blue-600 mr-2"></i>Posts by {{ user.username }}
+        </h2>
+        
+        {% if posts %}
+        <div class="space-y-4">
+            {% for post in posts %}
+            <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">
+                                {{ post.category }}
+                            </span>
+                            <span class="text-gray-500 text-sm">
+                                <i class="fas fa-clock mr-1"></i>{{ post.created_at.strftime('%b %d, %Y') }}
+                            </span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2 hover:text-blue-600 transition">
+                            <a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a>
+                        </h3>
+                        <p class="text-gray-600 mb-3">
+                            {{ post.content[:200] }}{% if post.content|length > 200 %}...{% endif %}
+                        </p>
+                        <div class="flex items-center space-x-4 text-sm text-gray-600">
+                            <span><i class="fas fa-comments mr-1"></i>{{ post.comments|length }} comments</span>
+                            <span><i class="fas fa-share mr-1"></i>{{ post.share_count() }} shares</span>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('view_post', post_id=post.id) }}" class="ml-4 text-blue-600 hover:text-blue-700 font-semibold">
+                        View <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+            <p class="text-gray-500 text-lg">No posts yet</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
